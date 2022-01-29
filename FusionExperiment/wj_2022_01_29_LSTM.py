@@ -465,13 +465,14 @@ def main(audioN,domainN):
     model_A.cuda()
     model_F.cuda()
 
-    best_wa = 0
-    best_ua = 0
 
-    acc = 0
-    acc1 = 0
 
     for epoch in range(10):
+        best_wa = 0
+        best_ua = 0
+        acc = 0
+        acc1 = 0
+
         print("Epoch:",epoch)
         acc, acc1 = test_UA_WA(test_loader_audio, model_D,model_A,model_F)
         if (epoch > -1):
@@ -480,7 +481,7 @@ def main(audioN,domainN):
                                           momentum=opt.momentum, weight_decay=opt.weight_decay)
             scheduler_F = lr_scheduler.MultiStepLR(optimizer_F, [10, 20, 30], gamma=opt.gamma)
             model_F.cuda()
-            for au in range(200):
+            for au in range(100):
 
                 trainLSTM(train_loader_audio, model_D, model_A, model_F, criterion_F, optimizer_F, scheduler_F)
                 acc, acc1 = test_UA_WA(test_loader_audio, model_D, model_A, model_F)
@@ -502,6 +503,7 @@ if __name__=="__main__":
     file.close()
 
     opt.cudaNum = list(map(int, opt.cudaNum.split(',')))
-    for i in range(5):
-        for j in range(10):
-            main(i,j)
+    for i in range(20):
+        main(i, 3)
+        # for j in range(10):
+        #     main(i,j)
