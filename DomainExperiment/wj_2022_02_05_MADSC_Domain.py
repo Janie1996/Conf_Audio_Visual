@@ -1,10 +1,12 @@
 # -*- coding: UTF-8 -*-
 """
-@file:wj_2022_01_11_Resnet_featureSave.py
+@file:wj_2022_02_05_MADSC_Domain.py
 @author: Wei Jie
-@date: 2022/1/11
-@description:
+@date: 2022/2/5
+@description:  proposed model for audio-visual domain adaptation
+                每次需要更改三个保存文件的地方
 """
+
 
 import sys
 import os
@@ -23,8 +25,8 @@ import torch.nn as nn
 from AudioDataset import wj_2021_12_27_utils as utils
 from AudioDataset import wj_2021_12_27_dataload as load_dataset_audio
 from VideoDataset import wj_2022_01_02_dataload as load_dataset_video
-from DomainModels import wj_2022_01_08_ResNet_Domain as Model
-# from DomainModels import wj_2022_01_17_proposed_Domain as Model
+# from DomainModels import wj_2022_01_08_ResNet_Domain as Model
+from DomainModels import wj_2022_01_17_proposed_Domain as Model
 import pickle
 
 num=0
@@ -36,7 +38,7 @@ parser.add_argument('--videoRoot', default='E:/Dataset/IEMOCAP_full_release/face
 parser.add_argument('--testNum',type=int,default=1106,help='test dataset number')
 parser.add_argument('--batchSize', type=int, default=32, help='train batch size')
 parser.add_argument('--nClasses', type=int, default=4, help='# of classes in source domain')
-parser.add_argument('--niter', type=int, default=200, help='number of epochs to train for')
+parser.add_argument('--niter', type=int, default=500, help='number of epochs to train for')
 parser.add_argument('--lr', type=float, default=0.005, help='learning rate, default=0.0002')
 parser.add_argument('--step_size', type=float, default=80, help='step of learning rate changes')
 parser.add_argument('--gamma', type=float, default=0.5, help='weight decay of learning rate')
@@ -273,23 +275,14 @@ def main():
                                                            length=opt.length,channel=opt.input_channel,feature=40)
 
 
-    # model = Model.inno_model1(input_channel=opt.input_channel, classes=opt.nClasses, height=224, width=40)
-    model=Model.resnet18(classes=opt.nClasses,channel=opt.input_channel)
-
-    # 预训练参数加载
-    args = pretrainedmodels.__dict__['resnet18'](pretrained='imagenet').state_dict()
-    model_state_dict = model.state_dict()
-    for key in args:
-        if key in model_state_dict:
-            model_state_dict[key] = args[key]
-    model.load_state_dict(model_state_dict)
+    model = Model.inno_model1(input_channel=opt.input_channel, classes=opt.nClasses, height=224, width=40)
 
     ''' Loss & Optimizer '''
     criterion = nn.CrossEntropyLoss()
     criterion_D = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), opt.lr,momentum=opt.momentum, weight_decay=opt.weight_decay)
     # scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.step_size, gamma=opt.gamma)
-    scheduler = lr_scheduler.MultiStepLR(optimizer, [10,20,30,40], gamma=opt.gamma)
+    scheduler = lr_scheduler.MultiStepLR(optimizer, [80,160,240], gamma=opt.gamma)
 
     # optimizer = torch.optim.Adam(params=model.parameters(),lr=opt.lr,weight_decay=opt.weight_decay)
     # optimizer = torch.optim.RMSprop(params=model.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
@@ -306,10 +299,10 @@ def main():
         print("Epoch:",epoch)
         # start_time = time.time()
         train(train_loader_audio,train_loader_video,model,criterion,criterion_D,optimizer,scheduler)
-        train(train_loader_audio1, train_loader_video, model, criterion, criterion_D, optimizer, scheduler)
-        train(train_loader_audio2, train_loader_video, model, criterion, criterion_D, optimizer, scheduler)
-        train(train_loader_audio3, train_loader_video, model, criterion, criterion_D, optimizer, scheduler)
-        train(train_loader_audio4, train_loader_video, model, criterion, criterion_D, optimizer, scheduler)
+        trainAug(train_loader_audio1, train_loader_video, model, criterion, criterion_D, optimizer, scheduler)
+        trainAug(train_loader_audio2, train_loader_video, model, criterion, criterion_D, optimizer, scheduler)
+        trainAug(train_loader_audio3, train_loader_video, model, criterion, criterion_D, optimizer, scheduler)
+        trainAug(train_loader_audio4, train_loader_video, model, criterion, criterion_D, optimizer, scheduler)
         acc, acc1 = test_UA_WA(test_loader_audio, model)
         # print("time:",time.time()-start_time)
         if (acc > best_wa):
@@ -318,14 +311,14 @@ def main():
             state_dict1 = model.state_dict()
 
             torch.save(state_dict1,
-                           "Checkpoint/Domain_Resnet_" + str(num) + "_AV_b32.pth")
+                           "Checkpoint/Domain_MADSC_" + str(num) + "_AV_b32.pth")
         if (acc1 > best_ua):
             best_ua = acc1
         print("best_wa:", best_wa, "best_ua:", best_ua)
     print("end best_wa:", best_wa, "best_ua:", best_ua)
     num+=1
 
-    file = open('DATA/log_audioVisual_Domain.txt', 'a')
+    file = open('DATA/log_audioVisual_Domain_MADSC.txt', 'a')
     file.write(str(best_wa)+'  '+str(best_ua))
     file.write('\n')
     file.close()
@@ -333,7 +326,7 @@ def main():
 if __name__=="__main__":
 
 
-    file = open('DATA/log_audioVisual_Domain.txt', 'w')
+    file = open('DATA/log_audioVisual_Domain_MADSC.txt', 'w')
     file.close()
 
     opt.cudaNum = list(map(int, opt.cudaNum.split(',')))

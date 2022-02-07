@@ -499,11 +499,11 @@ def main(audioN,domainN):
 
 if __name__=="__main__":
 
-    file = open('DATA/log_Fusion.txt', 'w')
-    file.close()
+    # file = open('DATA/log_Fusion.txt', 'w')
+    # file.close()
 
     opt.cudaNum = list(map(int, opt.cudaNum.split(',')))
-    for i in range(20):
-        main(i, 3)
-        # for j in range(10):
-        #     main(i,j)
+    for i in range(1,20):
+        # main(i, 3)
+        for j in range(10):
+            main(i,j)

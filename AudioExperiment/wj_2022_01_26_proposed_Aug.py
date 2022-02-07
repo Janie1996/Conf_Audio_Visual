@@ -39,7 +39,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--audioFeatureRoot', default='DATA/2022_01_03_name_logfbank_dict_40d.pickle', help='root-path for audio')
 parser.add_argument('--videoRoot', default='E:/Dataset/IEMOCAP_full_release/', help='root-path for video')
 parser.add_argument('--testNum',type=int,default=1106,help='test dataset number')
-parser.add_argument('--batchSize', type=int, default=128, help='train batch size')
+parser.add_argument('--batchSize', type=int, default=32, help='train batch size')
 parser.add_argument('--nClasses', type=int, default=4, help='# of classes in source domain')
 parser.add_argument('--niter', type=int, default=500, help='number of epochs to train for')
 parser.add_argument('--lr', type=float, default=0.08, help='learning rate, default=0.0002')
@@ -335,7 +335,7 @@ def main():
             best_wa = acc
             model.eval()
             state_dict1=model.state_dict()
-            torch.save(state_dict1, "Checkpoint/Audio_DSCASA_"+str(num)+".pth")
+            torch.save(state_dict1, "Checkpoint/Audio_DSCASA_0_b32_"+str(num)+".pth")
             # model.load_state_dict(state_dict1)
             # acc, acc1 = test_UA_WA(test_loader, model)
         if (acc1 > best_ua):
@@ -350,7 +350,7 @@ def main():
     # if(best_wa>0.68):
     #     torch.save(state_dict1, "Checkpoint/Audio_seed_6099_"+str(best_wa)+"_DSCASA.pth")#, _use_new_zipfile_serialization=False)
 
-    file = open('DATA/log_audioOnly_proposed.txt', 'a')
+    file = open('DATA/log_audioOnly_proposed_0_b32.txt', 'a')
     file.write(str(best_wa)+'  '+str(best_ua))
     file.write('\n')
     file.close()
@@ -359,7 +359,7 @@ def main():
 if __name__=="__main__":
 
     # main()
-    file = open('DATA/log_audioOnly_proposed.txt', 'w')
+    file = open('DATA/log_audioOnly_proposed_0_b32.txt', 'w')
     file.close()
 
     opt.cudaNum = list(map(int, opt.cudaNum.split(',')))
