@@ -23,10 +23,10 @@ import pickle
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--audioFeatureRoot', default='DATA/2022_01_01_name_delta_logfbank_dict.pickle', help='root-path for audio')
+parser.add_argument('--audioFeatureRoot', default='DATA/2022_01_03_name_logfbank_dict_40d.pickle', help='root-path for audio')
 parser.add_argument('--videoRoot', default='E:/Dataset/IEMOCAP_full_release/', help='root-path for video')
 parser.add_argument('--testNum',type=int,default=1106,help='test dataset number')
-parser.add_argument('--batchSize', type=int, default=128, help='train batch size')
+parser.add_argument('--batchSize', type=int, default=32, help='train batch size')
 parser.add_argument('--nClasses', type=int, default=4, help='# of classes in source domain')
 parser.add_argument('--niter', type=int, default=500, help='number of epochs to train for')
 parser.add_argument('--lr', type=float, default=0.08, help='learning rate, default=0.0002')
@@ -37,7 +37,7 @@ parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum　(default: 0.9)')
 parser.add_argument('--weight-decay', '--wd', default=1e-4, type=float,
                     metavar='W', help='weight decay (default: 1e-4)')
-parser.add_argument('--input_channel',  default=3, type=int,help='the channel number of input feature')
+parser.add_argument('--input_channel',  default=1, type=int,help='the channel number of input feature')
 parser.add_argument('--length',  default=5, type=int,help='the clip number of input audio feature')
 parser.add_argument('--frameWin',  default=224, type=int,help='the frame number of each input melspec feature map')
 
@@ -175,7 +175,7 @@ def main(session='Ses01', man='_F'):
     # train_list, test_list = utils.leaveOneSession(name_emotionLabel, session)
     # train_list, test_list = utils.leaveOneSpeaker(name_emotionLabel,session,man)
 
-    train_list, test_list,seed = utils.randomSplit(length=len(name_emotionLabel),testNum=opt.testNum)
+    train_list, test_list = utils.randomSplit(length=len(name_emotionLabel),testNum=opt.testNum)
     train_loader, test_loader = load_dataset.AudioLoadData(opt.audioFeatureRoot,train_list, test_list, name_emotionLabel,
                                                                            opt.batchSize,framelen=opt.length,winlen=opt.frameWin)
 
@@ -212,20 +212,20 @@ def main(session='Ses01', man='_F'):
             best_ua = acc1
         print("best_wa:", best_wa, "best_ua:", best_ua)
         print("end best_wa:", best_wa, "best_ua:", best_ua)
-        if(best_wa>0.7):
-            torch.save(state_dict1,
-                   "Checkpoint/Audio_" + str(best_wa) + "_DSCASA.pth")  # , _use_new_zipfile_serialization=False)
+        # if(best_wa>0.7):
+        #     torch.save(state_dict1,
+        #            "Checkpoint/Audio_" + str(best_wa) + "_DSCASA.pth")  # , _use_new_zipfile_serialization=False)
 
-    file = open('DATA/log_audioOnly.txt', 'a')
-    file.write(str(best_wa)+'  '+str(best_ua))
-    file.write('\n')
-    file.close()
+    # file = open('DATA/log_audioOnly.txt', 'a')
+    # file.write(str(best_wa)+'  '+str(best_ua))
+    # file.write('\n')
+    # file.close()
 
 if __name__=="__main__":
 
     # main()
-    file = open('DATA/log_audioOnly.txt', 'w')
-    file.close()
+    # file = open('DATA/log_audioOnly.txt', 'w')
+    # file.close()
 
     opt.cudaNum = list(map(int, opt.cudaNum.split(',')))
     for i in range(10):

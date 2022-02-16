@@ -165,7 +165,7 @@ class inno_model1(nn.Module):
         80  -->1280
         """
 
-        self.featureDim = 2048  #8192
+        self.featureDim = 768  #8192
 
         self.classifier = nn.Linear(self.featureDim, self.classes)
 
