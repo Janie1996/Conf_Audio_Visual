@@ -49,7 +49,7 @@ def randomSplit(length,testNum):
 
     # x= np.random.randint(10000)
     # print(x)
-    random.seed(1156)
+    random.seed(6364)
     # length=100
     # testNum=20
     test_list = random.sample(range(0, length), int(testNum))

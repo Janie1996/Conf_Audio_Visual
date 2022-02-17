@@ -311,14 +311,14 @@ def main():
             state_dict1 = model.state_dict()
 
             torch.save(state_dict1,
-                           "Checkpoint/Domain_MADSC_" + str(num) + "_AV_1156.pth")
+                           "Checkpoint/Domain_MADSC_" + str(num) + "_AV_6364.pth")
         if (acc1 > best_ua):
             best_ua = acc1
         print("best_wa:", best_wa, "best_ua:", best_ua)
     print("end best_wa:", best_wa, "best_ua:", best_ua)
     num+=1
 
-    file = open('DATA/log_audioVisual_Domain_MADSC_1156.txt', 'a')
+    file = open('DATA/log_audioVisual_Domain_MADSC_6364.txt', 'a')
     file.write(str(best_wa)+'  '+str(best_ua))
     file.write('\n')
     file.close()
@@ -326,7 +326,7 @@ def main():
 if __name__=="__main__":
 
 
-    file = open('DATA/log_audioVisual_Domain_MADSC_1156.txt', 'w')
+    file = open('DATA/log_audioVisual_Domain_MADSC_6364.txt', 'w')
     file.close()
 
     opt.cudaNum = list(map(int, opt.cudaNum.split(',')))
