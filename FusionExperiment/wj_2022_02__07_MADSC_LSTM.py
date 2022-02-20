@@ -447,11 +447,11 @@ def main(audioN,domainN):
     # model_D = DomainModel.inno_model1(input_channel=opt.input_channel,classes=opt.nClasses,height=opt.frameWin,width=opt.featureDim)
     # checkpoint = torch.load('Checkpoint/Domain_40_2_CASA_1.pth')
     model_D = DomainModel.inno_model1(input_channel=opt.input_channel, classes=opt.nClasses, height=224, width=40)
-    checkpoint = torch.load("Checkpoint/Domain_MADSC_" + str(domainN) + "_AV_4259.pth")
+    checkpoint = torch.load("Checkpoint/Domain_MADSC_" + str(domainN) + "_AV_0.pth")
     model_D.load_state_dict(checkpoint)
 
     model_A = AudioModel.inno_model1(input_channel=opt.input_channel,classes=opt.nClasses,height=opt.frameWin,width=opt.featureDim)
-    checkpoint = torch.load("Checkpoint/Audio_DSCASA_4259_"+str(audioN)+".pth")
+    checkpoint = torch.load("Checkpoint/Audio_DSCASA_0_b32_"+str(audioN)+".pth")
     model_A.load_state_dict(checkpoint)
 
     model_F = FusionModel.EmotionRecog(classes=opt.nClasses,featureDim=768+768)
@@ -491,7 +491,7 @@ def main(audioN,domainN):
                 if (acc1 > best_ua):
                     best_ua = acc1
             print("end best_wa:", best_wa, "best_ua:", best_ua)
-            file = open('DATA/log_MADSC_Fusion_4259.txt', 'a')
+            file = open('DATA/log_MADSC_Fusion_0.txt', 'a')
             file.write(str(best_wa) + '  ' + str(best_ua))
             file.write('\n')
             file.close()
@@ -500,11 +500,23 @@ def main(audioN,domainN):
 
 if __name__=="__main__":
 
-    file = open('DATA/log_MADSC_Fusion_4259.txt', 'w')
+    file = open('DATA/log_MADSC_Fusion_0.txt', 'w')
     file.close()
 
     opt.cudaNum = list(map(int, opt.cudaNum.split(',')))
-    for i in range(5):
-        main(i, i)
-    for i in range(5):
-        main(3,i)
+
+    main(0, 0)
+    main(1, 1)
+    main(4, 4)
+    main(6, 2)
+    main(9, 8)
+    main(0, 0)
+    main(0, 1)
+    main(0, 4)
+    main(0, 2)
+    main(0, 8)
+
+    # for i in range(5):
+    #     main(i, i)
+    # for i in range(5):
+    #     main(3,i)
