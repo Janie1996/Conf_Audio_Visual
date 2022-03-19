@@ -211,9 +211,10 @@ def main():
         model.cuda()
         acc, acc1,cm = test_UA_WA(test_loader, model)
         end+=cm
-    # classes = ['ang', 'hap', 'neu', 'sad']
-    # end=end*50
-    # plot_confusion_matrix(end, 'fusion.png', classes)
+    classes = ['ang', 'hap', 'neu', 'sad']
+    trueNu =5*np.ones((4,4))
+    # end=end*20
+    plot_confusion_matrix(end/trueNu*100, 'fusion.png', classes)
     np.save('DATA/cm_6990.npy', end)
 
 
